@@ -26,6 +26,7 @@ BURNED_PIECE = 3     # Codi posicio "cremada"
 WINNER_PIECE = 4     # Codi posicio guanyadora
 DEPH_LEVEL = ROW_COUNT * COLUMN_COUNT # Limit de profunditat de l'arbre
 DEPTH_LEVEL = 5 #ficar la profunditat de l'arbre
+
 # DEFINICIO DE MODULS
 
 def crear_tauler():
@@ -63,7 +64,7 @@ def jugada_guanyadora(board, player):
 def es_node_terminal(board):
     return jugada_guanyadora(board, PLAYER_PIECE) or jugada_guanyadora(board, AI_PIECE) or len(recupera_posicions_valides(board, PLAYER_PIECE)) == 0 or len(recupera_posicions_valides(board, AI_PIECE)) == 0
 
-def avalua_estat(board, piece):
+def avalua_estat(board, piece): #per calcular la puntuacio i la heuristica
     score = 0
     # Aquest modul caldria ser programat per avaluar cada estat
     # Us deixo un funcio d exemple, pero l'heu de modificar/millorar
@@ -111,7 +112,7 @@ def minimax(board, depth, alpha, beta, maximizingPlayer):
         for pos in posicions_valides:
             b_copy = board.copy()
             moure_fitxa(b_copy, ROW_COUNT-pos[0]-1, pos[1], PLAYER_PIECE)
-            new_score = minimax(b_copy, depth-1, alpha, beta, True)[2]
+            new_score = minimax(b_copy, depth-1, alpha, beta, True)[2] # retorna la posicio score de (None, None, 0)
         return position[0], position[1], value
 
 def recupera_posicions_valides(board, player):
@@ -139,6 +140,8 @@ def dibuixa_tauler(board):
     		elif board[r][c] == WINNER_PIECE: 
     			pygame.draw.circle(screen, GREEN, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
     pygame.display.update()
+    
+#idjugada unica en cada partida i en cada jugada
 
 """
 ********************************
@@ -158,10 +161,10 @@ size = (width, height)
 RADIUS = int(SQUARESIZE/2 - 5) # Radi fitxa
 
 myfont = pygame.font.SysFont("monospace", 75)
-turn = PLAYER # Obligo a comencar a jugador huma
+turn = PLAYER # Obligo a comencar a jugador huma, es pot canvar (random)
 start = [0,0]
 #
-# Cal millorar la situacio inicial de les fitxes 
+# Cal millorar la situacio inicial de les fitxes, canviar el random perue no surtin les fitxes al mateix lloc
 #
 start[0] = random.randint(0, ROW_COUNT-1)
 start[1] = random.randint(0, COLUMN_COUNT-1)
@@ -200,19 +203,19 @@ while not game_over: # Mentre hi ha partida
                         
                         label = myfont.render("Guanya huma!", 1, RED)
                         screen.blit(label, (40,10))
-                        pygame.display.flip()
+                        pygame.display.flip() # la matriu esta al reves dels pixels, per aixo flip
                         
                         game_over = True
                     else:
                         mostra_tauler(board)
                         dibuixa_tauler(board)
                     turn += 1
-                    turn = turn % 2
+                    turn = turn % 2 # canviar el torn del jugador
 
     if turn == AI and not game_over: # Demana a jugador IA la seva jugada
         if not es_node_terminal(board): # Comprovo si hi ha jugava viable, o si ja es taules per ofegament
-            row, col, minimax_score = minimax(board, DEPH_LEVEL, 0, 0, True) # 40 mov max.
-            if es_posicio_valida(board, ROW_COUNT-row-1, col, AI_PIECE):
+            row, col, minimax_score = minimax(board, DEPH_LEVEL, 0, 0, True) # 40 mov max. (no imp), els nivell van al reves, comencem a max i acabem a 0, canviar valor alpha beta (0,0), comença max.
+            if es_posicio_valida(board, ROW_COUNT-row-1, col, AI_PIECE): # per rebaixar el nivell de complexitat
                 pygame.time.wait(500)
                 moure_fitxa(board, ROW_COUNT-row-1, col, AI_PIECE)
 
