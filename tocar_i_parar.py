@@ -25,7 +25,7 @@ AI_PIECE = 2         # Codi posicio jugador AI
 BURNED_PIECE = 3     # Codi posicio "cremada"
 WINNER_PIECE = 4     # Codi posicio guanyadora
 DEPH_LEVEL = ROW_COUNT * COLUMN_COUNT # Limit de profunditat de l'arbre
-
+DEPTH_LEVEL = 5 #ficar la profunditat de l'arbre
 # DEFINICIO DE MODULS
 
 def crear_tauler():
